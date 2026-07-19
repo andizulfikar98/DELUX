@@ -28,15 +28,15 @@
             <div class="text-center mb-8">
                 <h1 class="text-4xl font-extrabold text-tafblue tracking-tight">DELUX</h1>
                 <p class="text-sm text-gray-500 font-semibold tracking-widest mt-1">DEALER LUXURY TRACKER</p>
-                <p class="text-xs text-gray-400 mt-2">Toyota Astra Financial Services</p>
+                <p class="text-xs text-gray-400 mt-2">Toyota Astra Financial Services - Cabang Palembang</p>
             </div>
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Kode Akses Dealer / Admin</label>
-                    <input type="password" id="accessCode" placeholder="Masukkan Kode Akses..." class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-tafblue focus:border-tafblue uppercase">
+                    <input type="password" id="accessCode" placeholder="Masukkan Kode Akses..." class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-tafblue focus:border-tafblue uppercase text-center font-bold tracking-widest">
                 </div>
                 <button onclick="login()" class="w-full bg-tafblue text-white py-3 px-4 rounded-lg hover:bg-blue-900 font-bold transition duration-200">
-                    MASUK KE DASHBOARD <i class="fas fa-arrow-right ml-2"></i>
+                    MASUK DASHBOARD <i class="fas fa-arrow-right ml-2"></i>
                 </button>
                 <p id="errorMsg" class="text-red-500 text-sm text-center hidden font-semibold">Kode Akses Tidak Valid!</p>
             </div>
@@ -48,39 +48,39 @@
         <!-- Navbar -->
         <nav class="bg-tafblue text-white p-4 shadow-lg flex justify-between items-center">
             <div>
-                <h1 class="text-2xl font-bold">DELUX <span class="text-sm font-normal text-gray-300 ml-2">| Live SLA Tracker</span></h1>
+                <h1 class="text-2xl font-bold">DELUX <span class="text-sm font-normal text-gray-300 ml-2 hidden sm:inline">| Live B2B SLA Tracker</span></h1>
             </div>
             <div class="flex items-center space-x-4">
-                <span id="dealerName" class="font-semibold bg-blue-800 px-3 py-1 rounded-full text-sm"></span>
-                <button onclick="logout()" class="text-red-300 hover:text-red-100"><i class="fas fa-sign-out-alt"></i> Keluar</button>
+                <span id="dealerName" class="font-semibold bg-blue-800 px-3 py-1 rounded-full text-xs sm:text-sm shadow-inner"></span>
+                <button onclick="logout()" class="text-red-300 hover:text-red-100 font-semibold text-sm"><i class="fas fa-sign-out-alt"></i> Keluar</button>
             </div>
         </nav>
 
         <!-- Main Content -->
-        <main class="flex-grow p-6 overflow-auto">
-            <div class="max-w-6xl mx-auto">
+        <main class="flex-grow p-4 sm:p-6 overflow-auto">
+            <div class="max-w-7xl mx-auto">
                 <div class="flex justify-between items-end mb-6">
                     <div>
                         <h2 class="text-xl font-bold text-gray-800">Pipeline Aplikasi (Green Lane)</h2>
-                        <p class="text-sm text-gray-500">Target SLA: Siang Masuk, Sore PO (< 5 Jam)</p>
+                        <p class="text-sm text-gray-500 font-medium mt-1">Target Pencairan: <span class="text-tafred font-bold">< 5 Jam Kerja</span></p>
                     </div>
                     <div id="adminPanel" class="hidden">
                         <button class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow hover:bg-green-700">
-                            <i class="fas fa-plus mr-1"></i> Input Data Baru
+                            <i class="fas fa-plus mr-1"></i> Input Data
                         </button>
                     </div>
                 </div>
 
-                <!-- Table -->
-                <div class="bg-white rounded-lg shadow overflow-hidden border border-gray-200">
+                <!-- Table Container -->
+                <div class="bg-white rounded-lg shadow-lg overflow-x-auto border border-gray-200">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-100">
                             <tr>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">No. Aplikasi</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Nama (Masked)</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Jam Masuk</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Status SLA</th>
-                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Argo Real-Time</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Aplikasi & Jam</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Nasabah & Domisili</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Unit & DP</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Status & Keterangan</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Argo SLA (Live)</th>
                             </tr>
                         </thead>
                         <tbody id="tableBody" class="bg-white divide-y divide-gray-200">
@@ -94,16 +94,43 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // Simulasi Database Sederhana
-        // Jam masuk diset beberapa jam yang lalu agar argo terlihat berjalan
+        // Simulasi Waktu
         const today = new Date();
-        const pastTime1 = new Date(today.getTime() - (2 * 60 * 60 * 1000) - (15 * 60 * 1000)); // 2 jam 15 menit lalu
-        const pastTime2 = new Date(today.getTime() - (4 * 60 * 60 * 1000) - (45 * 60 * 1000)); // 4 jam 45 menit lalu
+        const t1 = new Date(today.getTime() - (3 * 60 * 60 * 1000) - (15 * 60 * 1000)); // 3j 15m lalu
+        const t2 = new Date(today.getTime() - (1 * 60 * 60 * 1000) - (45 * 60 * 1000)); // 1j 45m lalu
+        const t3 = new Date(today.getTime() - (4 * 60 * 60 * 1000) - (50 * 60 * 1000)); // 4j 50m lalu
+        const t4 = new Date(today.getTime() - (24 * 60 * 60 * 1000)); // 1 hari lalu
         
+        // Database Tersentralisasi (Bisa Disesuaikan)
         const dummyData = [
-            { id: "APP-2620110", name: "JUN***", time: pastTime1, status: "ON PROGRESS", color: "text-yellow-600 bg-yellow-100" },
-            { id: "APP-2620211", name: "KUR******", time: pastTime2, status: "STOPPER", color: "text-red-600 bg-red-100" },
-            { id: "APP-2620312", name: "LES*****", time: new Date(today.getTime() - (30 * 60 * 1000)), status: "VALID (PO READY)", color: "text-green-600 bg-green-100" }
+            { 
+                id: "APP-2620110", time: t1, 
+                name: "Junaedi", domisili: "Palembang", 
+                unit: "Avanza 1.5 G 2022", dp: "30%", 
+                status: "ANALISIS", ket: "Berkas lengkap. Menunggu approval final analis.", 
+                color: "text-blue-700 bg-blue-100" 
+            },
+            { 
+                id: "APP-2620211", time: t2, 
+                name: "Kurniawati", domisili: "Banyuasin", 
+                unit: "Brio Satya E 2023", dp: "25%", 
+                status: "ESKALASI", ket: "Deviasi rate bunga. Menunggu approval HO.", 
+                color: "text-yellow-700 bg-yellow-100 border border-yellow-300" 
+            },
+            { 
+                id: "APP-2620312", time: t3, 
+                name: "Lestari Ningsih", domisili: "Prabumulih", 
+                unit: "Innova Reborn 2.4 2021", dp: "35%", 
+                status: "PO", ket: "PO Terbit! Silakan cetak dokumen.", 
+                color: "text-green-700 bg-green-100 font-bold" 
+            },
+            { 
+                id: "APP-2620413", time: t4, 
+                name: "M. Ridho", domisili: "Palembang", 
+                unit: "Pajero Sport 2020", dp: "20%", 
+                status: "REJECT", ket: "Kapasitas DSR over limit & BI Checking.", 
+                color: "text-gray-700 bg-gray-200" 
+            }
         ];
 
         let timerInterval;
@@ -123,7 +150,7 @@
                 error.classList.add('hidden');
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('dashboardScreen').classList.replace('hidden', 'flex');
-                document.getElementById('dealerName').innerHTML = '<i class="fas fa-shield-alt mr-1"></i> ADMIN TAF (OJD)';
+                document.getElementById('dealerName').innerHTML = '<i class="fas fa-shield-alt mr-1"></i> ADMIN TAF';
                 document.getElementById('adminPanel').classList.remove('hidden');
                 startSLA();
             } else {
@@ -138,26 +165,32 @@
             clearInterval(timerInterval);
         }
 
-        function padZero(num) {
-            return num < 10 ? '0' + num : num;
-        }
+        function padZero(num) { return num < 10 ? '0' + num : num; }
 
         function formatTime(dateObj) {
-            return padZero(dateObj.getHours()) + ":" + padZero(dateObj.getMinutes()) + " WIB";
+            return padZero(dateObj.getHours()) + ":" + padZero(dateObj.getMinutes());
         }
 
         function calculateElapsed(startTime, status) {
-            if(status === "VALID (PO READY)") return "<span class='font-bold text-green-600'><i class='fas fa-check-circle'></i> Selesai</span>";
+            // Jika status akhir, argo berhenti
+            const endStatuses = ["PO", "DO", "VALID", "REJECT", "CANCEL"];
+            if(endStatuses.includes(status)) {
+                if(status === "REJECT" || status === "CANCEL") {
+                    return `<span class='font-bold text-gray-500 text-sm'><i class='fas fa-ban'></i> Berhenti</span>`;
+                }
+                return `<span class='font-bold text-green-600 text-sm'><i class='fas fa-check-circle'></i> Selesai</span>`;
+            }
             
+            // Argo Jalan terus
             const now = new Date();
             const diff = now - startTime;
             const hours = Math.floor(diff / (1000 * 60 * 60));
             const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             const secs = Math.floor((diff % (1000 * 60)) / 1000);
             
-            // Efek warna jika mepet SLA 5 jam
+            // Efek berkedip merah jika sudah mendekati/lewat 5 jam
             let timeColor = "text-gray-800";
-            if(hours >= 4) timeColor = "text-red-600 animate-pulse font-bold";
+            if(hours >= 4) timeColor = "text-red-600 animate-pulse font-extrabold";
             
             return `<span class="font-mono text-lg ${timeColor}">${padZero(hours)}h : ${padZero(mins)}m : ${padZero(secs)}s</span>`;
         }
@@ -169,15 +202,36 @@
             dummyData.forEach(data => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${data.id}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-bold tracking-widest">${data.name}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatTime(data.time)}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full ${data.color}">
+                    <!-- Kolom 1: ID & Jam -->
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <div class="text-sm font-bold text-gray-900">${data.id}</div>
+                        <div class="text-xs text-gray-500 mt-1"><i class="far fa-clock"></i> Masuk: ${formatTime(data.time)} WIB</div>
+                    </td>
+                    
+                    <!-- Kolom 2: Nasabah & Domisili -->
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <div class="text-sm font-bold text-tafblue">${data.name}</div>
+                        <div class="text-xs text-gray-500 mt-1"><i class="fas fa-map-marker-alt text-red-500"></i> ${data.domisili}</div>
+                    </td>
+                    
+                    <!-- Kolom 3: Unit & DP -->
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-800 font-medium">${data.unit}</div>
+                        <div class="text-xs font-bold text-gray-600 mt-1">DP: <span class="text-green-600">${data.dp}</span></div>
+                    </td>
+                    
+                    <!-- Kolom 4: Status & Keterangan -->
+                    <td class="px-4 py-4">
+                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-sm ${data.color}">
                             ${data.status}
                         </span>
+                        <div class="text-xs text-gray-600 mt-2 italic whitespace-normal max-w-xs">
+                            "${data.ket}"
+                        </div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
+                    
+                    <!-- Kolom 5: Argo Timer -->
+                    <td class="px-4 py-4 whitespace-nowrap text-center bg-gray-50 border-l border-gray-100">
                         ${calculateElapsed(data.time, data.status)}
                     </td>
                 `;
@@ -186,8 +240,8 @@
         }
 
         function startSLA() {
-            renderTable(); // render awal
-            timerInterval = setInterval(renderTable, 1000); // update setiap 1 detik
+            renderTable(); // Render langsung
+            timerInterval = setInterval(renderTable, 1000); // Update argo tiap detik
         }
     </script>
 </body>
