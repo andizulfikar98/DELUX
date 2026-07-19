@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DELUX - TAF Used Car Priority</title>
+    <!-- Tailwind CSS untuk Desain Mewah & Responsif -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tafblue: '#003366',
+                        tafred: '#c62828',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans h-screen flex flex-col">
+
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="flex-grow flex items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md border-t-4 border-tafred">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-extrabold text-tafblue tracking-tight">DELUX</h1>
+                <p class="text-sm text-gray-500 font-semibold tracking-widest mt-1">DEALER LUXURY TRACKER</p>
+                <p class="text-xs text-gray-400 mt-2">Toyota Astra Financial Services</p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Kode Akses Dealer / Admin</label>
+                    <input type="password" id="accessCode" placeholder="Masukkan Kode Akses..." class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-tafblue focus:border-tafblue uppercase">
+                </div>
+                <button onclick="login()" class="w-full bg-tafblue text-white py-3 px-4 rounded-lg hover:bg-blue-900 font-bold transition duration-200">
+                    MASUK KE DASHBOARD <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+                <p id="errorMsg" class="text-red-500 text-sm text-center hidden font-semibold">Kode Akses Tidak Valid!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD SCREEN (Hidden by default) -->
+    <div id="dashboardScreen" class="hidden flex-col h-full">
+        <!-- Navbar -->
+        <nav class="bg-tafblue text-white p-4 shadow-lg flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold">DELUX <span class="text-sm font-normal text-gray-300 ml-2">| Live SLA Tracker</span></h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span id="dealerName" class="font-semibold bg-blue-800 px-3 py-1 rounded-full text-sm"></span>
+                <button onclick="logout()" class="text-red-300 hover:text-red-100"><i class="fas fa-sign-out-alt"></i> Keluar</button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="flex-grow p-6 overflow-auto">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-800">Pipeline Aplikasi (Green Lane)</h2>
+                        <p class="text-sm text-gray-500">Target SLA: Siang Masuk, Sore PO (< 5 Jam)</p>
+                    </div>
+                    <div id="adminPanel" class="hidden">
+                        <button class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow hover:bg-green-700">
+                            <i class="fas fa-plus mr-1"></i> Input Data Baru
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="bg-white rounded-lg shadow overflow-hidden border border-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">No. Aplikasi</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Nama (Masked)</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Jam Masuk</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Status SLA</th>
+                                <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Argo Real-Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Data will be injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Simulasi Database Sederhana
+        // Jam masuk diset beberapa jam yang lalu agar argo terlihat berjalan
+        const today = new Date();
+        const pastTime1 = new Date(today.getTime() - (2 * 60 * 60 * 1000) - (15 * 60 * 1000)); // 2 jam 15 menit lalu
+        const pastTime2 = new Date(today.getTime() - (4 * 60 * 60 * 1000) - (45 * 60 * 1000)); // 4 jam 45 menit lalu
+        
+        const dummyData = [
+            { id: "APP-2620110", name: "JUN***", time: pastTime1, status: "ON PROGRESS", color: "text-yellow-600 bg-yellow-100" },
+            { id: "APP-2620211", name: "KUR******", time: pastTime2, status: "STOPPER", color: "text-red-600 bg-red-100" },
+            { id: "APP-2620312", name: "LES*****", time: new Date(today.getTime() - (30 * 60 * 1000)), status: "VALID (PO READY)", color: "text-green-600 bg-green-100" }
+        ];
+
+        let timerInterval;
+
+        function login() {
+            const code = document.getElementById('accessCode').value.toUpperCase();
+            const error = document.getElementById('errorMsg');
+            
+            if(code === 'AUTO77') {
+                error.classList.add('hidden');
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('dashboardScreen').classList.replace('hidden', 'flex');
+                document.getElementById('dealerName').innerHTML = '<i class="fas fa-store mr-1"></i> Auto 77 Palembang';
+                document.getElementById('adminPanel').classList.add('hidden');
+                startSLA();
+            } else if (code === 'TAFADMIN') {
+                error.classList.add('hidden');
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('dashboardScreen').classList.replace('hidden', 'flex');
+                document.getElementById('dealerName').innerHTML = '<i class="fas fa-shield-alt mr-1"></i> ADMIN TAF (OJD)';
+                document.getElementById('adminPanel').classList.remove('hidden');
+                startSLA();
+            } else {
+                error.classList.remove('hidden');
+            }
+        }
+
+        function logout() {
+            document.getElementById('dashboardScreen').classList.replace('flex', 'hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('accessCode').value = '';
+            clearInterval(timerInterval);
+        }
+
+        function padZero(num) {
+            return num < 10 ? '0' + num : num;
+        }
+
+        function formatTime(dateObj) {
+            return padZero(dateObj.getHours()) + ":" + padZero(dateObj.getMinutes()) + " WIB";
+        }
+
+        function calculateElapsed(startTime, status) {
+            if(status === "VALID (PO READY)") return "<span class='font-bold text-green-600'><i class='fas fa-check-circle'></i> Selesai</span>";
+            
+            const now = new Date();
+            const diff = now - startTime;
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const secs = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            // Efek warna jika mepet SLA 5 jam
+            let timeColor = "text-gray-800";
+            if(hours >= 4) timeColor = "text-red-600 animate-pulse font-bold";
+            
+            return `<span class="font-mono text-lg ${timeColor}">${padZero(hours)}h : ${padZero(mins)}m : ${padZero(secs)}s</span>`;
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            dummyData.forEach(data => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${data.id}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-bold tracking-widest">${data.name}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatTime(data.time)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-full ${data.color}">
+                            ${data.status}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        ${calculateElapsed(data.time, data.status)}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function startSLA() {
+            renderTable(); // render awal
+            timerInterval = setInterval(renderTable, 1000); // update setiap 1 detik
+        }
+    </script>
+</body>
+</html>
