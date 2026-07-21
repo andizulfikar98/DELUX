@@ -3,159 +3,287 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DELUX - TAF Used Car Priority</title>
-    <!-- Tailwind CSS untuk Desain Mewah & Responsif -->
+    <title>DELUX - TAF Used Car Priority & PKS System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script>
         tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        tafblue: '#003366',
-                        tafred: '#c62828',
-                    }
-                }
-            }
+            theme: { extend: { colors: { tafblue: '#003366', tafred: '#c62828', tafgray: '#f4f6f9' } } }
         }
     </script>
+    <style>
+        .tab-active { border-bottom: 4px solid #c62828; color: #003366; font-weight: bold; }
+        .tab-inactive { color: #6b7280; font-weight: 500; }
+        .tab-inactive:hover { color: #003366; }
+    </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans h-screen flex flex-col">
+<body class="bg-tafgray text-gray-800 font-sans h-screen flex flex-col overflow-hidden">
 
-    <!-- LOGIN SCREEN -->
-    <div id="loginScreen" class="flex-grow flex items-center justify-center p-4">
-        <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md border-t-4 border-tafred">
+    <!-- 1. LOGIN SCREEN -->
+    <div id="loginScreen" class="flex-grow flex items-center justify-center p-4 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-gray-100">
+        <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md border-t-8 border-tafred">
             <div class="text-center mb-8">
-                <h1 class="text-4xl font-extrabold text-tafblue tracking-tight">DELUX</h1>
-                <p class="text-sm text-gray-500 font-semibold tracking-widest mt-1">DEALER LUXURY TRACKER</p>
-                <p class="text-xs text-gray-400 mt-2">Toyota Astra Financial Services - Cabang Palembang</p>
+                <h1 class="text-5xl font-extrabold text-tafblue tracking-tight">DELUX</h1>
+                <p class="text-sm text-gray-500 font-bold tracking-widest mt-1">OPERATIONAL COMMAND CENTER</p>
+                <p class="text-xs text-gray-400 mt-2">Toyota Astra Financial Services</p>
             </div>
-            <div class="space-y-4">
+            <div class="space-y-5">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Kode Akses Dealer / Admin</label>
-                    <input type="password" id="accessCode" placeholder="Masukkan Kode Akses..." class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-tafblue focus:border-tafblue uppercase text-center font-bold tracking-widest">
+                    <label class="block text-sm font-semibold text-gray-700">Kode Akses (PIN)</label>
+                    <input type="password" id="accessCode" placeholder="Masukkan Kode (TAFADMIN / AUTO77)" class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-tafblue focus:border-tafblue uppercase text-center font-bold tracking-widest text-lg">
                 </div>
-                <button onclick="login()" class="w-full bg-tafblue text-white py-3 px-4 rounded-lg hover:bg-blue-900 font-bold transition duration-200">
-                    MASUK DASHBOARD <i class="fas fa-arrow-right ml-2"></i>
+                <button onclick="login()" class="w-full bg-tafblue text-white py-3 px-4 rounded-lg hover:bg-blue-900 font-bold transition duration-200 shadow-lg">
+                    SECURE LOGIN <i class="fas fa-lock ml-2"></i>
                 </button>
-                <p id="errorMsg" class="text-red-500 text-sm text-center hidden font-semibold">Kode Akses Tidak Valid!</p>
+                <p id="errorMsg" class="text-red-600 text-sm text-center hidden font-bold animate-pulse">Kode Akses Ditolak!</p>
             </div>
         </div>
     </div>
 
-    <!-- DASHBOARD SCREEN (Hidden by default) -->
-    <div id="dashboardScreen" class="hidden flex-col h-full">
-        <!-- Navbar -->
-        <nav class="bg-tafblue text-white p-4 shadow-lg flex justify-between items-center">
-            <div>
-                <h1 class="text-2xl font-bold">DELUX <span class="text-sm font-normal text-gray-300 ml-2 hidden sm:inline">| Live B2B SLA Tracker</span></h1>
+    <!-- 2. MAIN DASHBOARD (Hidden by default) -->
+    <div id="dashboardScreen" class="hidden flex-col h-full w-full">
+        <!-- TOP NAVIGATION -->
+        <nav class="bg-tafblue text-white shadow-xl z-20">
+            <div class="px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-car text-2xl text-tafred"></i>
+                    <h1 class="text-2xl font-black tracking-wider">DELUX <span class="text-sm font-light text-gray-300 ml-2">v3.0</span></h1>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <div class="bg-blue-900 px-4 py-2 rounded-lg border border-blue-700 shadow-inner flex items-center">
+                        <i class="fas fa-user-circle mr-2 text-tafred"></i>
+                        <span id="activeUser" class="font-bold text-sm tracking-wide"></span>
+                    </div>
+                    <button onclick="logout()" class="text-red-400 hover:text-red-200 font-bold text-sm transition"><i class="fas fa-power-off mr-1"></i> LOGOUT</button>
+                </div>
             </div>
-            <div class="flex items-center space-x-4">
-                <span id="dealerName" class="font-semibold bg-blue-800 px-3 py-1 rounded-full text-xs sm:text-sm shadow-inner"></span>
-                <button onclick="logout()" class="text-red-300 hover:text-red-100 font-semibold text-sm"><i class="fas fa-sign-out-alt"></i> Keluar</button>
+            <!-- MODULE TABS -->
+            <div class="bg-white flex px-6 shadow-md" id="tabContainer">
+                <button onclick="switchTab('slaBucket')" id="tabSla" class="px-6 py-4 tab-active focus:outline-none flex items-center">
+                    <i class="fas fa-stopwatch mr-2"></i> SLA BUCKET TRACKER
+                </button>
+                <button onclick="switchTab('pksDealer')" id="tabPks" class="px-6 py-4 tab-inactive focus:outline-none flex items-center">
+                    <i class="fas fa-file-signature mr-2"></i> REGISTRASI PKS DEALER
+                </button>
             </div>
         </nav>
 
-        <!-- Main Content -->
-        <main class="flex-grow p-4 sm:p-6 overflow-auto">
-            <div class="max-w-7xl mx-auto">
-                <div class="flex justify-between items-end mb-6">
-                    <div>
-                        <h2 class="text-xl font-bold text-gray-800">Pipeline Aplikasi (Green Lane)</h2>
-                        <p class="text-sm text-gray-500 font-medium mt-1">Target Pencairan: <span class="text-tafred font-bold">< 5 Jam Kerja</span></p>
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-grow overflow-hidden relative">
+            
+            <!-- MODULE A: SLA BUCKET TRACKER -->
+            <div id="slaBucketModule" class="h-full overflow-auto p-6 absolute inset-0 bg-tafgray">
+                <div class="max-w-7xl mx-auto">
+                    
+                    <div class="flex justify-between items-end mb-6 bg-white p-4 rounded-lg shadow border-l-4 border-tafblue">
+                        <div>
+                            <h2 class="text-2xl font-black text-gray-800">Pipeline Aplikasi (Green Lane)</h2>
+                            <p class="text-sm text-gray-500 font-medium mt-1">Pantau pergerakan SLA. Target: <span class="text-tafred font-bold">Siang App-In, Sore PO</span></p>
+                        </div>
+                        
+                        <!-- TAF EXCLUSIVE: DEALER FILTER -->
+                        <div id="tafFilterContainer" class="hidden flex items-center space-x-3">
+                            <label class="text-sm font-bold text-gray-700"><i class="fas fa-filter text-tafblue"></i> Filter Bucket Dealer:</label>
+                            <select id="dealerFilter" onchange="renderSlaTable()" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-tafblue focus:border-tafblue block p-2.5 font-bold shadow-sm">
+                                <option value="ALL">🏢 SEMUA DEALER (ALL BUCKET)</option>
+                                <option value="AUTO 77 PALEMBANG">Auto 77 Palembang</option>
+                                <option value="CENTRA MOBILINDO">Centra Mobilindo</option>
+                                <option value="YOGA MOBILINDO">Yoga Mobilindo</option>
+                            </select>
+                        </div>
                     </div>
-                    <div id="adminPanel" class="hidden">
-                        <button class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow hover:bg-green-700">
-                            <i class="fas fa-plus mr-1"></i> Input Data
-                        </button>
-                    </div>
-                </div>
 
-                <!-- Table Container -->
-                <div class="bg-white rounded-lg shadow-lg overflow-x-auto border border-gray-200">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-100">
-                            <tr>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Aplikasi & Jam</th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Nasabah & Domisili</th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Unit & DP</th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Status & Keterangan</th>
-                                <th class="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Argo SLA (Live)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody" class="bg-white divide-y divide-gray-200">
-                            <!-- Data will be injected by JS -->
-                        </tbody>
-                    </table>
+                    <!-- SLA TABLE -->
+                    <div class="bg-white rounded-xl shadow-lg overflow-x-auto border border-gray-200">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-tafblue text-white">
+                                <tr>
+                                    <th class="px-5 py-4 text-left text-xs font-bold uppercase tracking-wider">Aplikasi & Jam</th>
+                                    <th class="px-5 py-4 text-left text-xs font-bold uppercase tracking-wider">Dealer Asal</th>
+                                    <th class="px-5 py-4 text-left text-xs font-bold uppercase tracking-wider">Nasabah & Unit</th>
+                                    <th class="px-5 py-4 text-left text-xs font-bold uppercase tracking-wider">Status TAF</th>
+                                    <th class="px-5 py-4 text-center text-xs font-bold uppercase tracking-wider">Argo SLA (Live)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="slaTableBody" class="bg-white divide-y divide-gray-200">
+                                <!-- JS Injected -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
+
+            <!-- MODULE B: PKS DEALER ONBOARDING -->
+            <div id="pksDealerModule" class="h-full overflow-auto p-6 absolute inset-0 bg-tafgray hidden">
+                <div class="max-w-6xl mx-auto">
+                    
+                    <div class="bg-white rounded-xl shadow-xl overflow-hidden mb-8 border border-gray-200">
+                        <div class="bg-tafblue px-6 py-4 flex justify-between items-center">
+                            <h2 class="text-xl font-bold text-white"><i class="fas fa-folder-plus mr-2"></i> Form Registrasi & Due Diligence PKS Reguler</h2>
+                            <span class="bg-tafred text-white text-xs font-bold px-3 py-1 rounded-full animate-pulse">CONFIDENTIAL</span>
+                        </div>
+                        
+                        <form onsubmit="submitPKS(event)" class="p-8">
+                            
+                            <!-- SECTION 1: KRITERIA UTAMA -->
+                            <h3 class="text-lg font-bold text-gray-800 border-b-2 border-gray-200 pb-2 mb-6"><i class="fas fa-check-square text-tafblue mr-2"></i> 1. Verifikasi Kriteria Showroom</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700">Nama Dealer / Showroom *</label>
+                                    <input type="text" required class="mt-1 w-full p-3 border rounded-lg bg-gray-50 focus:bg-white" placeholder="Sesuai NIB/SIUP">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700">Bentuk Usaha *</label>
+                                    <select class="mt-1 w-full p-3 border rounded-lg bg-gray-50 focus:bg-white">
+                                        <option>Perorangan (Individu)</option>
+                                        <option>Perseroan Terbatas (PT)</option>
+                                        <option>CV</option>
+                                        <option>Usaha Dagang (UD)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700">Lama Bisnis Berjalan (Tahun) *</label>
+                                    <input type="number" min="1" required class="mt-1 w-full p-3 border rounded-lg bg-gray-50" placeholder="Minimal 3 Tahun">
+                                    <p class="text-xs text-red-500 mt-1">*Syarat: $\ge$ 3 Tahun (Length of Business)</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700">Kapasitas Stok Unit (Display) *</label>
+                                    <input type="number" min="1" required class="mt-1 w-full p-3 border rounded-lg bg-gray-50" placeholder="Minimal 5 Unit">
+                                    <p class="text-xs text-red-500 mt-1">*Syarat: $\ge$ 5 Unit & Mayoritas Passenger Car</p>
+                                </div>
+                            </div>
+
+                            <!-- SECTION 2: UPLOAD DOKUMEN DUE DILIGENCE -->
+                            <h3 class="text-lg font-bold text-gray-800 border-b-2 border-gray-200 pb-2 mb-6 mt-8"><i class="fas fa-file-upload text-tafblue mr-2"></i> 2. Berkas Kelengkapan (E-Approval)</h3>
+                            <div class="bg-blue-50 p-4 rounded-lg mb-6 border border-blue-200">
+                                <p class="text-sm font-semibold text-tafblue"><i class="fas fa-info-circle"></i> Pastikan dokumen di-scan jelas. Jika SLIK ratusan halaman, lampirkan rangkuman kualitas terburuk.</p>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                                <!-- Checkboxes File Kelengkapan -->
+                                <label class="flex items-center space-x-3 p-3 border rounded-lg bg-white hover:bg-gray-50">
+                                    <input type="checkbox" required class="w-5 h-5 text-tafblue">
+                                    <span class="text-sm font-semibold text-gray-700">1. Form Due Diligence & Registrasi Lengkap</span>
+                                </label>
+                                <label class="flex items-center space-x-3 p-3 border rounded-lg bg-white hover:bg-gray-50">
+                                    <input type="checkbox" required class="w-5 h-5 text-tafblue">
+                                    <span class="text-sm font-semibold text-gray-700">2. NIB / SIUP / TDP / SKU</span>
+                                </label>
+                                <label class="flex items-center space-x-3 p-3 border rounded-lg bg-white hover:bg-gray-50">
+                                    <input type="checkbox" required class="w-5 h-5 text-tafblue">
+                                    <span class="text-sm font-semibold text-gray-700">3. KTP & NPWP Owner</span>
+                                </label>
+                                <label class="flex items-center space-x-3 p-3 border rounded-lg bg-white hover:bg-gray-50">
+                                    <input type="checkbox" required class="w-5 h-5 text-tafblue">
+                                    <span class="text-sm font-semibold text-gray-700">4. Cover Buku Rekening (Pencairan)</span>
+                                </label>
+                                <label class="flex items-center space-x-3 p-3 border rounded-lg bg-white hover:bg-gray-50">
+                                    <input type="checkbox" required class="w-5 h-5 text-tafblue">
+                                    <span class="text-sm font-semibold text-gray-700">5. Hasil SLIK Owner & Badan Usaha (BI $\ge$ 2)</span>
+                                </label>
+                                <label class="flex items-center space-x-3 p-3 border rounded-lg bg-white hover:bg-gray-50">
+                                    <input type="checkbox" required class="w-5 h-5 text-tafblue">
+                                    <span class="text-sm font-semibold text-gray-700">6. Foto Lux Head bersama Owner</span>
+                                </label>
+                                <label class="flex items-center space-x-3 p-3 border rounded-lg bg-white hover:bg-gray-50">
+                                    <input type="checkbox" required class="w-5 h-5 text-tafblue">
+                                    <span class="text-sm font-semibold text-gray-700">7. Foto Showroom & Kondisi Unit</span>
+                                </label>
+                                <label class="flex items-center space-x-3 p-3 border rounded-lg bg-white hover:bg-gray-50">
+                                    <input type="checkbox" required class="w-5 h-5 text-tafblue">
+                                    <span class="text-sm font-semibold text-gray-700">8. Bukti Kerjasama Leasing Partner (Banner/PO)</span>
+                                </label>
+                            </div>
+
+                            <div class="mb-8">
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Upload Gabungan PDF Dokumen Kelengkapan (Maks 10MB) *</label>
+                                <input type="file" accept=".pdf" required class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-tafblue hover:file:bg-blue-100">
+                            </div>
+
+                            <!-- SUBMIT -->
+                            <div class="flex justify-end pt-4 border-t border-gray-200">
+                                <button type="submit" class="bg-tafred text-white font-bold py-3 px-8 rounded-lg shadow hover:bg-red-800 transition">
+                                    <i class="fas fa-paper-plane mr-2"></i> INPUT E-APPROVAL DUE DILIGENCE
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- E-APPROVAL STATUS TRACKER -->
+                    <div class="bg-white rounded-xl shadow p-6 border-t-4 border-green-600 mb-10">
+                        <h3 class="text-lg font-bold text-gray-800 mb-6"><i class="fas fa-project-diagram text-green-600 mr-2"></i> Tracking Flow E-Approval PKS</h3>
+                        <div class="flex items-center justify-between text-xs font-bold text-center text-gray-400">
+                            <div class="w-1/5 text-green-600"><i class="fas fa-check-circle text-2xl block mb-2"></i> 1. Cek Kriteria</div>
+                            <div class="flex-grow border-t-2 border-green-600 mb-6"></div>
+                            <div class="w-1/5 text-green-600"><i class="fas fa-file-alt text-2xl block mb-2"></i> 2. Berkas Terkumpul</div>
+                            <div class="flex-grow border-t-2 border-green-600 mb-6"></div>
+                            <div class="w-1/5 text-tafblue animate-pulse"><i class="fas fa-keyboard text-2xl block mb-2"></i> 3. Input E-Approval</div>
+                            <div class="flex-grow border-t-2 border-gray-300 mb-6 text-gray-300 border-dashed"></div>
+                            <div class="w-1/5"><i class="fas fa-handshake text-2xl block mb-2"></i> 4. TTD Basah Dealer</div>
+                            <div class="flex-grow border-t-2 border-gray-300 mb-6 text-gray-300 border-dashed"></div>
+                            <div class="w-1/5"><i class="fas fa-stamp text-2xl block mb-2"></i> 5. PKS Disetujui HO</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
         </main>
     </div>
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // Simulasi Waktu
-        const today = new Date();
-        const t1 = new Date(today.getTime() - (3 * 60 * 60 * 1000) - (15 * 60 * 1000)); // 3j 15m lalu
-        const t2 = new Date(today.getTime() - (1 * 60 * 60 * 1000) - (45 * 60 * 1000)); // 1j 45m lalu
-        const t3 = new Date(today.getTime() - (4 * 60 * 60 * 1000) - (50 * 60 * 1000)); // 4j 50m lalu
-        const t4 = new Date(today.getTime() - (24 * 60 * 60 * 1000)); // 1 hari lalu
+        // Simulasi Waktu Real-Time
+        const now = new Date();
+        const t1 = new Date(now.getTime() - (2 * 60 * 60 * 1000) - (15 * 60 * 1000));
+        const t2 = new Date(now.getTime() - (3 * 60 * 60 * 1000) - (45 * 60 * 1000));
+        const t3 = new Date(now.getTime() - (1 * 60 * 60 * 1000) - (10 * 60 * 1000));
+        const t4 = new Date(now.getTime() - (5 * 60 * 60 * 1000));
         
-        // Database Tersentralisasi (Bisa Disesuaikan)
-        const dummyData = [
-            { 
-                id: "APP-2620110", time: t1, 
-                name: "Junaedi", domisili: "Palembang", 
-                unit: "Avanza 1.5 G 2022", dp: "30%", 
-                status: "ANALISIS", ket: "Berkas lengkap. Menunggu approval final analis.", 
-                color: "text-blue-700 bg-blue-100" 
-            },
-            { 
-                id: "APP-2620211", time: t2, 
-                name: "Kurniawati", domisili: "Banyuasin", 
-                unit: "Brio Satya E 2023", dp: "25%", 
-                status: "ESKALASI", ket: "Deviasi rate bunga. Menunggu approval HO.", 
-                color: "text-yellow-700 bg-yellow-100 border border-yellow-300" 
-            },
-            { 
-                id: "APP-2620312", time: t3, 
-                name: "Lestari Ningsih", domisili: "Prabumulih", 
-                unit: "Innova Reborn 2.4 2021", dp: "35%", 
-                status: "PO", ket: "PO Terbit! Silakan cetak dokumen.", 
-                color: "text-green-700 bg-green-100 font-bold" 
-            },
-            { 
-                id: "APP-2620413", time: t4, 
-                name: "M. Ridho", domisili: "Palembang", 
-                unit: "Pajero Sport 2020", dp: "20%", 
-                status: "REJECT", ket: "Kapasitas DSR over limit & BI Checking.", 
-                color: "text-gray-700 bg-gray-200" 
-            }
+        // Database Tersentralisasi Multi-Dealer
+        const slaDatabase = [
+            { id: "APP-2620110", dealer: "AUTO 77 PALEMBANG", name: "Junaedi", unit: "Avanza 1.5 G 2022", time: t1, status: "ANALISIS", color: "text-blue-700 bg-blue-100 border-blue-300" },
+            { id: "APP-2620115", dealer: "AUTO 77 PALEMBANG", name: "Lestari", unit: "Innova Reborn", time: t3, status: "PO", color: "text-green-700 bg-green-100 border-green-300 font-bold" },
+            { id: "APP-2620201", dealer: "CENTRA MOBILINDO", name: "Kurniawati", unit: "Brio Satya E 2023", time: t2, status: "ESKALASI", color: "text-yellow-700 bg-yellow-100 border-yellow-400" },
+            { id: "APP-2620202", dealer: "CENTRA MOBILINDO", name: "M. Ridho", unit: "Pajero Sport", time: t1, status: "SURVEI", color: "text-purple-700 bg-purple-100 border-purple-300" },
+            { id: "APP-2620305", dealer: "YOGA MOBILINDO", name: "Fajri", unit: "Fortuner VRZ", time: t4, status: "REJECT", color: "text-red-700 bg-red-100 border-red-300" }
         ];
 
+        let currentUserRole = ""; 
         let timerInterval;
 
         function login() {
             const code = document.getElementById('accessCode').value.toUpperCase();
             const error = document.getElementById('errorMsg');
             
-            if(code === 'AUTO77') {
-                error.classList.add('hidden');
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('dashboardScreen').classList.replace('hidden', 'flex');
-                document.getElementById('dealerName').innerHTML = '<i class="fas fa-store mr-1"></i> Auto 77 Palembang';
-                document.getElementById('adminPanel').classList.add('hidden');
-                startSLA();
-            } else if (code === 'TAFADMIN') {
-                error.classList.add('hidden');
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('dashboardScreen').classList.replace('hidden', 'flex');
-                document.getElementById('dealerName').innerHTML = '<i class="fas fa-shield-alt mr-1"></i> ADMIN TAF';
-                document.getElementById('adminPanel').classList.remove('hidden');
-                startSLA();
+            if(code === 'TAFADMIN') {
+                currentUserRole = "TAFADMIN";
+                document.getElementById('activeUser').innerHTML = 'ADMIN TAF (OJD Lux)';
+                document.getElementById('tafFilterContainer').classList.remove('hidden'); // Munculkan filter dealer
+                document.getElementById('tabPks').classList.remove('hidden'); // Bisa akses PKS Onboarding
+                
+                successLogin();
+            } else if (code === 'AUTO77') {
+                currentUserRole = "AUTO 77 PALEMBANG";
+                document.getElementById('activeUser').innerHTML = 'DEALER: AUTO 77 PALEMBANG';
+                document.getElementById('tafFilterContainer').classList.add('hidden'); // Kunci filter
+                document.getElementById('tabPks').classList.add('hidden'); // Sembunyikan form PKS (hanya TAF)
+                
+                successLogin();
             } else {
                 error.classList.remove('hidden');
             }
+        }
+
+        function successLogin() {
+            document.getElementById('errorMsg').classList.add('hidden');
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('dashboardScreen').classList.replace('hidden', 'flex');
+            
+            // Set default view & render table
+            switchTab('slaBucket');
+            document.getElementById('dealerFilter').value = "ALL";
+            startSLA();
         }
 
         function logout() {
@@ -165,73 +293,89 @@
             clearInterval(timerInterval);
         }
 
-        function padZero(num) { return num < 10 ? '0' + num : num; }
+        function switchTab(tabId) {
+            const slaModule = document.getElementById('slaBucketModule');
+            const pksModule = document.getElementById('pksDealerModule');
+            const tabSlaBtn = document.getElementById('tabSla');
+            const tabPksBtn = document.getElementById('tabPks');
 
-        function formatTime(dateObj) {
-            return padZero(dateObj.getHours()) + ":" + padZero(dateObj.getMinutes());
+            if(tabId === 'slaBucket') {
+                slaModule.classList.remove('hidden');
+                pksModule.classList.add('hidden');
+                tabSlaBtn.className = "px-6 py-4 tab-active focus:outline-none flex items-center";
+                tabPksBtn.className = "px-6 py-4 tab-inactive focus:outline-none flex items-center";
+            } else {
+                slaModule.classList.add('hidden');
+                pksModule.classList.remove('hidden');
+                tabSlaBtn.className = "px-6 py-4 tab-inactive focus:outline-none flex items-center";
+                tabPksBtn.className = "px-6 py-4 tab-active focus:outline-none flex items-center";
+            }
         }
 
+        function submitPKS(e) {
+            e.preventDefault();
+            alert("SUKSES! Data Registrasi PKS berhasil diinput ke sistem E-Approval Due Diligence TAF HO.");
+            e.target.reset(); // reset form
+        }
+
+        // --- SLA LOGIC ---
+        function padZero(num) { return num < 10 ? '0' + num : num; }
+        function formatTime(dateObj) { return padZero(dateObj.getHours()) + ":" + padZero(dateObj.getMinutes()); }
+
         function calculateElapsed(startTime, status) {
-            // Jika status akhir, argo berhenti
             const endStatuses = ["PO", "DO", "VALID", "REJECT", "CANCEL"];
             if(endStatuses.includes(status)) {
-                if(status === "REJECT" || status === "CANCEL") {
-                    return `<span class='font-bold text-gray-500 text-sm'><i class='fas fa-ban'></i> Berhenti</span>`;
-                }
-                return `<span class='font-bold text-green-600 text-sm'><i class='fas fa-check-circle'></i> Selesai</span>`;
+                if(status === "REJECT" || status === "CANCEL") return `<span class='font-bold text-red-600'><i class='fas fa-ban'></i> Berhenti</span>`;
+                return `<span class='font-bold text-green-600'><i class='fas fa-check-circle'></i> Selesai</span>`;
             }
             
-            // Argo Jalan terus
-            const now = new Date();
-            const diff = now - startTime;
+            const diff = new Date() - startTime;
             const hours = Math.floor(diff / (1000 * 60 * 60));
             const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             const secs = Math.floor((diff % (1000 * 60)) / 1000);
             
-            // Efek berkedip merah jika sudah mendekati/lewat 5 jam
             let timeColor = "text-gray-800";
             if(hours >= 4) timeColor = "text-red-600 animate-pulse font-extrabold";
             
             return `<span class="font-mono text-lg ${timeColor}">${padZero(hours)}h : ${padZero(mins)}m : ${padZero(secs)}s</span>`;
         }
 
-        function renderTable() {
-            const tbody = document.getElementById('tableBody');
+        function renderSlaTable() {
+            const tbody = document.getElementById('slaTableBody');
             tbody.innerHTML = '';
             
-            dummyData.forEach(data => {
+            // Filter Logic based on Role
+            let selectedFilter = document.getElementById('dealerFilter').value;
+            let filteredData = slaDatabase;
+
+            if (currentUserRole !== "TAFADMIN") {
+                // Dealer view: Only see their own data
+                filteredData = slaDatabase.filter(d => d.dealer === currentUserRole);
+            } else if (selectedFilter !== "ALL") {
+                // TAF Admin view: Can filter by dropdown
+                filteredData = slaDatabase.filter(d => d.dealer === selectedFilter);
+            }
+            
+            filteredData.forEach(data => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <!-- Kolom 1: ID & Jam -->
-                    <td class="px-4 py-4 whitespace-nowrap">
-                        <div class="text-sm font-bold text-gray-900">${data.id}</div>
+                    <td class="px-5 py-4 whitespace-nowrap">
+                        <div class="text-sm font-bold text-tafblue">${data.id}</div>
                         <div class="text-xs text-gray-500 mt-1"><i class="far fa-clock"></i> Masuk: ${formatTime(data.time)} WIB</div>
                     </td>
-                    
-                    <!-- Kolom 2: Nasabah & Domisili -->
-                    <td class="px-4 py-4 whitespace-nowrap">
-                        <div class="text-sm font-bold text-tafblue">${data.name}</div>
-                        <div class="text-xs text-gray-500 mt-1"><i class="fas fa-map-marker-alt text-red-500"></i> ${data.domisili}</div>
+                    <td class="px-5 py-4 whitespace-nowrap">
+                        <div class="text-xs font-bold bg-gray-100 text-gray-600 px-2 py-1 rounded inline-block"><i class="fas fa-store"></i> ${data.dealer}</div>
                     </td>
-                    
-                    <!-- Kolom 3: Unit & DP -->
-                    <td class="px-4 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-800 font-medium">${data.unit}</div>
-                        <div class="text-xs font-bold text-gray-600 mt-1">DP: <span class="text-green-600">${data.dp}</span></div>
+                    <td class="px-5 py-4 whitespace-nowrap">
+                        <div class="text-sm font-bold text-gray-800">${data.name}</div>
+                        <div class="text-xs text-gray-500 mt-1">${data.unit}</div>
                     </td>
-                    
-                    <!-- Kolom 4: Status & Keterangan -->
-                    <td class="px-4 py-4">
-                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-sm ${data.color}">
+                    <td class="px-5 py-4">
+                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-sm border ${data.color}">
                             ${data.status}
                         </span>
-                        <div class="text-xs text-gray-600 mt-2 italic whitespace-normal max-w-xs">
-                            "${data.ket}"
-                        </div>
                     </td>
-                    
-                    <!-- Kolom 5: Argo Timer -->
-                    <td class="px-4 py-4 whitespace-nowrap text-center bg-gray-50 border-l border-gray-100">
+                    <td class="px-5 py-4 whitespace-nowrap text-center bg-gray-50 border-l border-gray-200">
                         ${calculateElapsed(data.time, data.status)}
                     </td>
                 `;
@@ -240,8 +384,9 @@
         }
 
         function startSLA() {
-            renderTable(); // Render langsung
-            timerInterval = setInterval(renderTable, 1000); // Update argo tiap detik
+            renderSlaTable();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(renderSlaTable, 1000); // Live update argo
         }
     </script>
 </body>
