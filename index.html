@@ -15,6 +15,7 @@
         .tab-active { border-bottom: 4px solid #c62828; color: #003366; font-weight: bold; }
         .tab-inactive { color: #6b7280; font-weight: 500; }
         .tab-inactive:hover { color: #003366; }
+        .custom-radio { accent-color: #003366; }
     </style>
 </head>
 <body class="bg-tafgray text-gray-800 font-sans h-screen flex flex-col overflow-hidden">
@@ -40,14 +41,14 @@
         </div>
     </div>
 
-    <!-- 2. MAIN DASHBOARD (Hidden by default) -->
+    <!-- 2. MAIN DASHBOARD -->
     <div id="dashboardScreen" class="hidden flex-col h-full w-full">
         <!-- TOP NAVIGATION -->
         <nav class="bg-tafblue text-white shadow-xl z-20">
             <div class="px-6 py-4 flex justify-between items-center">
                 <div class="flex items-center space-x-3">
                     <i class="fas fa-car text-2xl text-tafred"></i>
-                    <h1 class="text-2xl font-black tracking-wider">DELUX <span class="text-sm font-light text-gray-300 ml-2">v3.2</span></h1>
+                    <h1 class="text-2xl font-black tracking-wider">DELUX <span class="text-sm font-light text-gray-300 ml-2">v4.0</span></h1>
                 </div>
                 <div class="flex items-center space-x-6">
                     <div class="bg-blue-900 px-4 py-2 rounded-lg border border-blue-700 shadow-inner flex items-center">
@@ -62,7 +63,7 @@
                 <button onclick="switchTab('slaBucket')" id="tabSla" class="px-6 py-4 tab-active focus:outline-none flex items-center">
                     <i class="fas fa-stopwatch mr-2"></i> SLA BUCKET TRACKER
                 </button>
-                <!-- Tombol PKS disembunyikan secara default (Hard-Hidden) -->
+                <!-- Tombol PKS disembunyikan secara default (Hard-Hidden untuk Dealer) -->
                 <button onclick="switchTab('pksDealer')" id="tabPks" class="px-6 py-4 tab-inactive focus:outline-none items-center hidden">
                     <i class="fas fa-file-signature mr-2"></i> REGISTRASI PKS DEALER
                 </button>
@@ -75,11 +76,10 @@
             <!-- MODULE A: SLA BUCKET TRACKER -->
             <div id="slaBucketModule" class="h-full overflow-auto p-6 absolute inset-0 bg-tafgray">
                 <div class="max-w-[95%] mx-auto">
-                    
                     <div class="flex justify-between items-end mb-6 bg-white p-4 rounded-lg shadow border-l-4 border-tafblue">
                         <div>
                             <h2 class="text-2xl font-black text-gray-800">Pipeline Aplikasi (Green Lane)</h2>
-                            <p class="text-sm text-gray-500 font-medium mt-1">Pantau pergerakan SLA. Target: <span class="text-tafred font-bold">Siang App-In, Sore PO</span></p>
+                            <p class="text-sm text-gray-500 font-medium mt-1">Argo Aktif: <span class="font-bold text-gray-700">08:00 - 16:00</span> | Istirahat: <span class="font-bold text-tafred">12:00 - 13:00 (Freeze)</span></p>
                         </div>
                         
                         <!-- TAF EXCLUSIVE: ISOLATED DEALER FILTER -->
@@ -99,12 +99,12 @@
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-tafblue text-white">
                                 <tr>
-                                    <th class="px-5 py-4 text-left text-xs font-bold uppercase tracking-wider">Aplikasi & Jam</th>
+                                    <th class="px-5 py-4 text-left text-xs font-bold uppercase tracking-wider">Aplikasi & Jam Masuk</th>
                                     <th class="px-5 py-4 text-left text-xs font-bold uppercase tracking-wider">Dealer Asal</th>
                                     <th class="px-5 py-4 text-left text-xs font-bold uppercase tracking-wider">Nasabah & Domisili</th>
                                     <th class="px-5 py-4 text-left text-xs font-bold uppercase tracking-wider">Unit & DP</th>
                                     <th class="px-5 py-4 text-left text-xs font-bold uppercase tracking-wider">Status & Keterangan</th>
-                                    <th class="px-5 py-4 text-center text-xs font-bold uppercase tracking-wider w-40">Argo SLA (Live)</th>
+                                    <th class="px-5 py-4 text-center text-xs font-bold uppercase tracking-wider w-48">Waktu Terserap (SLA)</th>
                                 </tr>
                             </thead>
                             <tbody id="slaTableBody" class="bg-white divide-y divide-gray-200">
@@ -117,99 +117,109 @@
 
             <!-- MODULE B: PKS DEALER ONBOARDING (TAF ONLY) -->
             <div id="pksDealerModule" class="h-full overflow-auto p-6 absolute inset-0 bg-tafgray hidden">
-                <div class="max-w-6xl mx-auto">
+                <div class="max-w-5xl mx-auto space-y-8 pb-12">
                     
-                    <div class="bg-white rounded-xl shadow-xl overflow-hidden mb-8 border border-gray-200">
+                    <!-- ALERT & DOWNLOAD SECTION -->
+                    <div class="bg-red-50 border-l-4 border-tafred p-6 rounded-r-xl shadow">
+                        <h3 class="text-red-800 font-bold text-lg mb-2"><i class="fas fa-exclamation-triangle mr-2"></i> NOTES PENTING</h3>
+                        <p class="text-sm text-red-700 font-medium mb-4">Pastikan Anda mengajukan **E-Approval Due Dilligence** (Tahap 1) dan mendapat approval dari Analyst sebelum mensubmit **Form Review Legal PKS** (Tahap 2).</p>
+                        
+                        <div class="bg-white p-4 rounded border border-red-200 inline-block shadow-sm">
+                            <p class="text-sm text-gray-700 font-bold mb-3">Link File PKS (Template Due Dilligence, Form Registrasi, PKS, Contoh Kelengkapan):</p>
+                            <a href="https://intip.in/DokumenPKSReguler" target="_blank" class="bg-tafblue text-white text-sm font-bold py-2 px-4 rounded hover:bg-blue-800 transition shadow">
+                                <i class="fas fa-cloud-download-alt mr-2"></i> https://intip.in/DokumenPKSReguler
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- BAGIAN 1: DUE DILIGENCE -->
+                    <div class="bg-white rounded-xl shadow-xl overflow-hidden border border-gray-200">
                         <div class="bg-tafblue px-6 py-4 flex justify-between items-center">
-                            <h2 class="text-xl font-bold text-white"><i class="fas fa-folder-plus mr-2"></i> Form Registrasi & Due Diligence PKS Reguler</h2>
-                            <span class="bg-tafred text-white text-xs font-bold px-3 py-1 rounded-full animate-pulse">CONFIDENTIAL</span>
+                            <h2 class="text-lg font-bold text-white"><i class="fas fa-folder-plus mr-2"></i> TAHAP 1: Form Registrasi & Due Diligence (E-Approval)</h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                                <div><label class="block text-sm font-bold text-gray-700">Nama Dealer *</label><input type="text" class="mt-1 w-full p-2 border rounded bg-gray-50"></div>
+                                <div><label class="block text-sm font-bold text-gray-700">Lama Bisnis *</label><input type="number" class="mt-1 w-full p-2 border rounded bg-gray-50" placeholder="Min. 3 Tahun"></div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Upload Gabungan PDF Dokumen Kelengkapan (Maks 10MB) *</label>
+                                <input type="file" accept=".pdf" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-tafblue">
+                            </div>
+                            <button onclick="alert('Tahap 1 Terkirim untuk E-Approval!')" class="bg-gray-800 text-white text-sm font-bold py-2 px-6 rounded shadow hover:bg-gray-900">SUBMIT E-APPROVAL</button>
+                        </div>
+                    </div>
+
+                    <!-- BAGIAN 2: FORM REVIEW LEGAL -->
+                    <div class="bg-white rounded-xl shadow-xl overflow-hidden border border-gray-200">
+                        <div class="bg-tafblue px-6 py-4 flex justify-between items-center">
+                            <h2 class="text-lg font-bold text-white"><i class="fas fa-balance-scale mr-2"></i> TAHAP 2: Form Review Legal PKS</h2>
                         </div>
                         
-                        <form onsubmit="submitPKS(event)" class="p-8">
-                            
-                            <!-- SECTION 1: KRITERIA UTAMA -->
-                            <h3 class="text-lg font-bold text-gray-800 border-b-2 border-gray-200 pb-2 mb-6"><i class="fas fa-check-square text-tafblue mr-2"></i> 1. Verifikasi Kriteria Showroom</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                                <div>
-                                    <label class="block text-sm font-bold text-gray-700">Nama Dealer / Showroom *</label>
-                                    <input type="text" required class="mt-1 w-full p-3 border rounded-lg bg-gray-50 focus:bg-white" placeholder="Sesuai NIB/SIUP">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-gray-700">Bentuk Usaha *</label>
-                                    <select class="mt-1 w-full p-3 border rounded-lg bg-gray-50 focus:bg-white">
-                                        <option>Perorangan (Individu)</option>
-                                        <option>Perseroan Terbatas (PT)</option>
-                                        <option>CV</option>
-                                        <option>Usaha Dagang (UD)</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-gray-700">Lama Bisnis Berjalan (Tahun) *</label>
-                                    <input type="number" min="1" required class="mt-1 w-full p-3 border rounded-lg bg-gray-50" placeholder="Minimal 3 Tahun">
-                                    <p class="text-xs text-red-500 mt-1">*Syarat: $\ge$ 3 Tahun (Length of Business)</p>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-bold text-gray-700">Kapasitas Stok Unit (Display) *</label>
-                                    <input type="number" min="1" required class="mt-1 w-full p-3 border rounded-lg bg-gray-50" placeholder="Minimal 5 Unit">
-                                    <p class="text-xs text-red-500 mt-1">*Syarat: $\ge$ 5 Unit & Mayoritas Passenger Car</p>
+                        <form onsubmit="submitLegal(event)" class="p-6 space-y-6">
+                            <p class="text-xs text-gray-500 mb-4 pb-4 border-b border-gray-200">Hi, Admin TAF. When you submit this form, the owner will see your name and email address. <span class="text-red-500">* Required</span></p>
+
+                            <!-- Inputs -->
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">1. Email Address <span class="text-red-500">*</span></label>
+                                <input type="email" required placeholder="Please enter an email" class="w-full p-3 border-b-2 border-gray-300 focus:border-tafblue focus:outline-none bg-transparent">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">2. BRANCH <span class="text-red-500">*</span></label>
+                                <select required class="w-full md:w-1/2 p-3 border border-gray-300 rounded shadow-sm focus:border-tafblue focus:outline-none">
+                                    <option value="">Select your answer</option>
+                                    <option>LUX PALEMBANG</option>
+                                    <option>LUX JAKARTA</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">3. NAMA SHOWROOM <span class="text-red-500">*</span></label>
+                                <input type="text" required placeholder="Sesuai pengajuan" class="w-full p-3 border-b-2 border-gray-300 focus:border-tafblue focus:outline-none bg-transparent">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-3">4. TIPE SHOWROOM <span class="text-red-500">*</span></label>
+                                <div class="space-y-3">
+                                    <label class="flex items-center"><input type="radio" name="tipe" required class="w-5 h-5 custom-radio mr-3"><span class="text-sm font-medium">INDIVIDU</span></label>
+                                    <label class="flex items-center"><input type="radio" name="tipe" required class="w-5 h-5 custom-radio mr-3"><span class="text-sm font-medium">CV</span></label>
+                                    <label class="flex items-center"><input type="radio" name="tipe" required class="w-5 h-5 custom-radio mr-3"><span class="text-sm font-medium">PT</span></label>
+                                    <label class="flex items-center"><input type="radio" name="tipe" required class="w-5 h-5 custom-radio mr-3"><span class="text-sm font-medium">UD</span></label>
                                 </div>
                             </div>
 
-                            <!-- SECTION 2: UPLOAD DOKUMEN DUE DILIGENCE -->
-                            <h3 class="text-lg font-bold text-gray-800 border-b-2 border-gray-200 pb-2 mb-6 mt-8"><i class="fas fa-file-upload text-tafblue mr-2"></i> 2. Berkas Kelengkapan (E-Approval)</h3>
-                            <div class="bg-blue-50 p-4 rounded-lg mb-6 border border-blue-200">
-                                <p class="text-sm font-semibold text-tafblue"><i class="fas fa-info-circle"></i> Pastikan dokumen di-scan jelas. Jika SLIK ratusan halaman, lampirkan rangkuman kualitas terburuk.</p>
-                            </div>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                                <label class="flex items-center space-x-3 p-3 border rounded-lg bg-white hover:bg-gray-50">
-                                    <input type="checkbox" required class="w-5 h-5 text-tafblue">
-                                    <span class="text-sm font-semibold text-gray-700">1. Form Due Diligence & Registrasi Lengkap</span>
-                                </label>
-                                <label class="flex items-center space-x-3 p-3 border rounded-lg bg-white hover:bg-gray-50">
-                                    <input type="checkbox" required class="w-5 h-5 text-tafblue">
-                                    <span class="text-sm font-semibold text-gray-700">2. NIB / SIUP / TDP / SKU</span>
-                                </label>
-                                <label class="flex items-center space-x-3 p-3 border rounded-lg bg-white hover:bg-gray-50">
-                                    <input type="checkbox" required class="w-5 h-5 text-tafblue">
-                                    <span class="text-sm font-semibold text-gray-700">3. KTP & NPWP Owner</span>
-                                </label>
-                                <label class="flex items-center space-x-3 p-3 border rounded-lg bg-white hover:bg-gray-50">
-                                    <input type="checkbox" required class="w-5 h-5 text-tafblue">
-                                    <span class="text-sm font-semibold text-gray-700">4. Cover Buku Rekening (Pencairan)</span>
-                                </label>
-                                <label class="flex items-center space-x-3 p-3 border rounded-lg bg-white hover:bg-gray-50">
-                                    <input type="checkbox" required class="w-5 h-5 text-tafblue">
-                                    <span class="text-sm font-semibold text-gray-700">5. Hasil SLIK Owner & Badan Usaha (BI $\ge$ 2)</span>
-                                </label>
-                                <label class="flex items-center space-x-3 p-3 border rounded-lg bg-white hover:bg-gray-50">
-                                    <input type="checkbox" required class="w-5 h-5 text-tafblue">
-                                    <span class="text-sm font-semibold text-gray-700">6. Foto Lux Head bersama Owner</span>
-                                </label>
-                                <label class="flex items-center space-x-3 p-3 border rounded-lg bg-white hover:bg-gray-50">
-                                    <input type="checkbox" required class="w-5 h-5 text-tafblue">
-                                    <span class="text-sm font-semibold text-gray-700">7. Foto Showroom & Kondisi Unit</span>
-                                </label>
-                                <label class="flex items-center space-x-3 p-3 border rounded-lg bg-white hover:bg-gray-50">
-                                    <input type="checkbox" required class="w-5 h-5 text-tafblue">
-                                    <span class="text-sm font-semibold text-gray-700">8. Bukti Kerjasama Leasing Partner (Banner/PO)</span>
-                                </label>
+                            <!-- File Uploads -->
+                            <div class="space-y-6 pt-4 border-t border-gray-100">
+                                <div class="bg-gray-50 p-4 rounded border border-gray-200">
+                                    <label class="block text-sm font-bold text-gray-700 mb-1">5. Formulir PKS B Indo (Non-anonymous question) <span class="text-red-500">*</span></label>
+                                    <p class="text-xs text-gray-500 italic mb-3">Pastikan Format Sesuai Jenis Showroom (Perorangan atau PT) || Document dapat diakses melalui link di atas.</p>
+                                    <input type="file" accept=".doc,.docx" required class="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-bold file:bg-white file:border file:border-gray-300 shadow-sm cursor-pointer hover:file:bg-gray-100">
+                                    <p class="text-[10px] text-gray-400 mt-2">File number limit: 1 | Single file size limit: 10MB | Allowed file types: Word</p>
+                                </div>
+
+                                <div class="bg-gray-50 p-4 rounded border border-gray-200">
+                                    <label class="block text-sm font-bold text-gray-700 mb-1">6. Formulir PKS B Inggris (Non-anonymous question) <span class="text-red-500">*</span></label>
+                                    <p class="text-xs text-gray-500 italic mb-3">Pastikan Format Sesuai Jenis Showroom (Perorangan atau PT) || Document dapat diakses melalui link di atas.</p>
+                                    <input type="file" accept=".doc,.docx" required class="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-bold file:bg-white file:border file:border-gray-300 shadow-sm cursor-pointer hover:file:bg-gray-100">
+                                    <p class="text-[10px] text-gray-400 mt-2">File number limit: 1 | Single file size limit: 10MB | Allowed file types: Word</p>
+                                </div>
+
+                                <div class="bg-gray-50 p-4 rounded border border-gray-200">
+                                    <label class="block text-sm font-bold text-gray-700 mb-1">7. Dokumen Kelengkapan PKS (Jadikan 1 File) (Non-anonymous question) <span class="text-red-500">*</span></label>
+                                    <p class="text-xs text-gray-500 italic mb-3">Pastikan Format Sesuai Jenis Showroom (Perorangan atau PT) || Pastikan menjadi 1 file dan lengkap disemua kebutuhannya.</p>
+                                    <input type="file" accept=".pdf" required class="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-bold file:bg-white file:border file:border-gray-300 shadow-sm cursor-pointer hover:file:bg-gray-100">
+                                    <p class="text-[10px] text-gray-400 mt-2">File number limit: 1 | Single file size limit: 100MB | Allowed file types: PDF</p>
+                                </div>
                             </div>
 
-                            <div class="mb-8">
-                                <label class="block text-sm font-bold text-gray-700 mb-2">Upload Gabungan PDF Dokumen Kelengkapan (Maks 10MB) *</label>
-                                <input type="file" accept=".pdf" required class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-tafblue hover:file:bg-blue-100">
-                            </div>
-
-                            <!-- SUBMIT -->
-                            <div class="flex justify-end pt-4 border-t border-gray-200">
-                                <button type="submit" class="bg-tafred text-white font-bold py-3 px-8 rounded-lg shadow hover:bg-red-800 transition">
-                                    <i class="fas fa-paper-plane mr-2"></i> INPUT E-APPROVAL DUE DILIGENCE
+                            <div class="pt-6 border-t border-gray-200">
+                                <button type="submit" class="bg-[#d24c1e] text-white font-bold py-2 px-8 rounded shadow hover:bg-orange-800 transition">
+                                    Submit
                                 </button>
                             </div>
                         </form>
                     </div>
-
                 </div>
             </div>
 
@@ -218,21 +228,23 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // Simulasi Waktu Real-Time
-        const now = new Date();
-        const t1 = new Date(now.getTime() - (2 * 60 * 60 * 1000) - (15 * 60 * 1000));
-        const t2 = new Date(now.getTime() - (3 * 60 * 60 * 1000) - (45 * 60 * 1000));
-        const t3 = new Date(now.getTime() - (1 * 60 * 60 * 1000) - (10 * 60 * 1000));
-        const t4 = new Date(now.getTime() - (5 * 60 * 60 * 1000));
+        // Simulasi Dummy Data
+        // Waktu referensi di set 1-2 hari ke belakang agar argo punya nilai untuk didemonstrasikan.
+        const today = new Date();
         
-        // Database Tersentralisasi Multi-Dealer
+        const d1_start = new Date(today); d1_start.setDate(today.getDate() - 1); d1_start.setHours(9, 30, 0, 0); 
+        
+        const d2_start = new Date(today); d2_start.setDate(today.getDate() - 1); d2_start.setHours(11, 0, 0, 0);
+        const d2_end = new Date(today); d2_end.setDate(today.getDate() - 1); d2_end.setHours(15, 30, 0, 0); // Selesai jam 15:30 (Termasuk potong istirahat)
+        
+        const d3_start = new Date(today); d3_start.setHours(13, 15, 0, 0); 
+
+        // Database Tersentralisasi
         const slaDatabase = [
-            { id: "APP-2620110", dealer: "AUTO 77 PALEMBANG", name: "Junaedi", domisili: "Palembang", unit: "Avanza 1.5 G 2022", dp: "30%", time: t1, status: "ANALISIS", ket: "Berkas KTP Pasangan sudah lengkap. Menunggu approval final dari HO analis.", color: "text-blue-700 bg-blue-100 border-blue-300" },
-            { id: "APP-2620115", dealer: "VIP CARS MOBILINDO", name: "Asrida Dahriani", domisili: "Prabumulih", unit: "Innova Reborn 2.4", dp: "35%", time: t3, status: "PO", ket: "PO Terbit! Silakan cetak dokumen dan eksekusi hari ini.", color: "text-green-700 bg-green-100 border-green-300 font-bold" },
-            { id: "APP-2620120", dealer: "VIP CARS MOBILINDO", name: "Bambang Tri", domisili: "Banyuasin", unit: "Honda CRV 2021", dp: "25%", time: t1, status: "MATCHING", ket: "Sedang proses matching data di sistem inti Confins.", color: "text-indigo-700 bg-indigo-100 border-indigo-300" },
-            { id: "APP-2620201", dealer: "CENTRA MOBILINDO", name: "Kurniawati", domisili: "Musi Banyuasin", unit: "Brio Satya E 2023", dp: "25%", time: t2, status: "ESKALASI", ket: "Pengajuan deviasi rate bunga B2B khusus. Menunggu approval BM.", color: "text-yellow-700 bg-yellow-100 border-yellow-400" },
-            { id: "APP-2620202", dealer: "CENTRA MOBILINDO", name: "M. Ridho", domisili: "Palembang", unit: "Pajero Sport Dakar", dp: "20%", time: t1, status: "SURVEI", ket: "Penjadwalan CMO untuk survei fisik ke rumah nasabah sore ini.", color: "text-purple-700 bg-purple-100 border-purple-300" },
-            { id: "APP-2620305", dealer: "SRIWIJAYA MOTOR", name: "Fajri", domisili: "Ogan Ilir", unit: "Fortuner VRZ 2020", dp: "25%", time: t4, status: "REJECT", ket: "Ditolak: Kapasitas DSR over limit & riwayat BI Checking Kolektibilitas 4.", color: "text-red-700 bg-red-100 border-red-300" }
+            { id: "APP-2620110", dealer: "AUTO 77 PALEMBANG", name: "Junaedi", domisili: "Palembang", unit: "Avanza 1.5 G 2022", dp: "30%", timeIn: d1_start, timeOut: null, status: "ANALISIS", ket: "Menunggu approval analis HO.", color: "text-blue-700 bg-blue-100 border-blue-300" },
+            { id: "APP-2620115", dealer: "VIP CARS MOBILINDO", name: "Asrida Dahriani", domisili: "Prabumulih", unit: "Innova Reborn", dp: "35%", timeIn: d2_start, timeOut: d2_end, status: "PO", ket: "PO Terbit! Silakan cetak dokumen.", color: "text-green-700 bg-green-100 border-green-300 font-bold" },
+            { id: "APP-2620202", dealer: "CENTRA MOBILINDO", name: "M. Ridho", domisili: "Palembang", unit: "Pajero Sport", dp: "20%", timeIn: d1_start, timeOut: null, status: "SURVEI", ket: "Penjadwalan CMO ke rumah nasabah.", color: "text-purple-700 bg-purple-100 border-purple-300" },
+            { id: "APP-2620305", dealer: "SRIWIJAYA MOTOR", name: "Fajri", domisili: "Ogan Ilir", unit: "Fortuner VRZ 2020", dp: "25%", timeIn: d2_start, timeOut: d2_end, status: "REJECT", ket: "Kapasitas DSR over limit.", color: "text-red-700 bg-red-100 border-red-300" }
         ];
 
         let currentUserRole = ""; 
@@ -242,7 +254,6 @@
             const code = document.getElementById('accessCode').value.toUpperCase();
             const error = document.getElementById('errorMsg');
             
-            // ROLE LOGIC
             const authRoles = {
                 "TAFADMIN": { name: "ADMIN TAF (OJD Lux)", isTaf: true },
                 "AUTO77": { name: "AUTO 77 PALEMBANG", isTaf: false },
@@ -256,17 +267,13 @@
                 document.getElementById('activeUser').innerHTML = authRoles[code].isTaf ? authRoles[code].name : `<i class="fas fa-store mr-1"></i> DEALER: ${authRoles[code].name}`;
                 
                 if (authRoles[code].isTaf) {
-                    // Beri akses penuh ke Admin TAF
                     document.getElementById('tafFilterContainer').classList.remove('hidden');
-                    document.getElementById('tabPks').style.display = "flex"; // Tampilkan tombol PKS
+                    document.getElementById('tabPks').style.display = "flex"; 
                     document.getElementById('dealerFilter').value = "AUTO 77 PALEMBANG";
                 } else {
-                    // HARD-LOCK SECURITY UNTUK DEALER: 
-                    // Filter dropdown & Tab PKS dikunci 100% dan dihilangkan dari DOM layout
                     document.getElementById('tafFilterContainer').classList.add('hidden');
                     document.getElementById('tabPks').style.display = "none"; 
                 }
-                
                 successLogin();
             } else {
                 error.classList.remove('hidden');
@@ -277,8 +284,6 @@
             document.getElementById('errorMsg').classList.add('hidden');
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('dashboardScreen').classList.replace('hidden', 'flex');
-            
-            // Default selalu masuk ke SLA Bucket
             switchTab('slaBucket');
             startSLA();
         }
@@ -287,15 +292,12 @@
             document.getElementById('dashboardScreen').classList.replace('flex', 'hidden');
             document.getElementById('loginScreen').classList.remove('hidden');
             document.getElementById('accessCode').value = '';
-            
-            // Reset Keamanan
             currentUserRole = "";
             document.getElementById('tabPks').style.display = "none";
             clearInterval(timerInterval);
         }
 
         function switchTab(tabId) {
-            // LAYER KEAMANAN GANDA: Blokir eksekusi JavaScript jika role bukan TAFADMIN
             if (tabId === 'pksDealer' && currentUserRole !== "TAFADMIN") {
                 alert("SECURITY ALERT: Akses Ditolak. Area ini khusus Administrator TAF.");
                 return;
@@ -307,44 +309,95 @@
             const tabPksBtn = document.getElementById('tabPks');
 
             if(tabId === 'slaBucket') {
-                slaModule.classList.remove('hidden');
-                pksModule.classList.add('hidden');
+                slaModule.classList.remove('hidden'); pksModule.classList.add('hidden');
                 tabSlaBtn.className = "px-6 py-4 tab-active focus:outline-none flex items-center";
                 tabPksBtn.className = "px-6 py-4 tab-inactive focus:outline-none flex items-center";
             } else {
-                slaModule.classList.add('hidden');
-                pksModule.classList.remove('hidden');
+                slaModule.classList.add('hidden'); pksModule.classList.remove('hidden');
                 tabSlaBtn.className = "px-6 py-4 tab-inactive focus:outline-none flex items-center";
                 tabPksBtn.className = "px-6 py-4 tab-active focus:outline-none flex items-center";
             }
         }
 
-        function submitPKS(e) {
+        function submitLegal(e) {
             e.preventDefault();
-            alert("SUKSES! Data Registrasi PKS berhasil diinput ke sistem E-Approval Due Diligence TAF HO.");
+            alert("Berhasil! Dokumen Review Legal PKS telah disubmit.");
             e.target.reset();
         }
 
-        // --- SLA LOGIC ---
         function padZero(num) { return num < 10 ? '0' + num : num; }
-        function formatTime(dateObj) { return padZero(dateObj.getHours()) + ":" + padZero(dateObj.getMinutes()); }
+        function formatTimeDate(dateObj) { 
+            return padZero(dateObj.getDate()) + "/" + padZero(dateObj.getMonth()+1) + " " + padZero(dateObj.getHours()) + ":" + padZero(dateObj.getMinutes()); 
+        }
 
-        function calculateElapsed(startTime, status) {
-            const endStatuses = ["PO", "DO", "VALID", "REJECT", "CANCEL"];
-            if(endStatuses.includes(status)) {
-                if(status === "REJECT" || status === "CANCEL") return `<span class='font-bold text-red-600'><i class='fas fa-ban'></i> Berhenti</span>`;
-                return `<span class='font-bold text-green-600'><i class='fas fa-check-circle'></i> Selesai</span>`;
+        // ==========================================
+        // SMART WORKING HOURS SLA ENGINE
+        // ==========================================
+        function calculateWorkingMs(start, end) {
+            if (end < start) return 0;
+            let totalMs = 0;
+            let current = new Date(start);
+
+            while (current < end) {
+                // Set working blocks for the current day being iterated
+                let p1Start = new Date(current); p1Start.setHours(8, 0, 0, 0);  // 08:00
+                let p1End = new Date(current); p1End.setHours(12, 0, 0, 0);     // 12:00
+                let p2Start = new Date(current); p2Start.setHours(13, 0, 0, 0); // 13:00
+                let p2End = new Date(current); p2End.setHours(16, 0, 0, 0);     // 16:00
+
+                // Skip weekend calculation (Minggu=0, Sabtu=6)
+                if (current.getDay() !== 0 && current.getDay() !== 6) {
+                    // Cek overlap di Block 1 (08.00 - 12.00)
+                    let overlap1Start = Math.max(current.getTime(), p1Start.getTime());
+                    let overlap1End = Math.min(end.getTime(), p1End.getTime());
+                    if (overlap1End > overlap1Start) totalMs += (overlap1End - overlap1Start);
+
+                    // Cek overlap di Block 2 (13.00 - 16.00)
+                    let overlap2Start = Math.max(current.getTime(), p2Start.getTime());
+                    let overlap2End = Math.min(end.getTime(), p2End.getTime());
+                    if (overlap2End > overlap2Start) totalMs += (overlap2End - overlap2Start);
+                }
+                // Pindah ke jam 00:00 hari berikutnya
+                current.setDate(current.getDate() + 1);
+                current.setHours(0, 0, 0, 0);
             }
+            return totalMs;
+        }
+
+        function renderSlaDisplay(timeIn, timeOut, status) {
+            const endStatuses = ["PO", "DO", "VALID", "REJECT", "CANCEL"];
+            const isFinished = endStatuses.includes(status);
             
-            const diff = new Date() - startTime;
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const secs = Math.floor((diff % (1000 * 60)) / 1000);
+            // Tentukan batas akhir perhitungan. Jika sudah selesai, gunakan timeOut. Jika belum, gunakan waktu saat ini.
+            const endTime = isFinished ? timeOut : new Date();
+            const diffMs = calculateWorkingMs(timeIn, endTime);
             
-            let timeColor = "text-gray-800";
-            if(hours >= 4) timeColor = "text-red-600 animate-pulse font-extrabold";
+            const hours = Math.floor(diffMs / (1000 * 60 * 60));
+            const mins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+            const secs = Math.floor((diffMs % (1000 * 60)) / 1000);
             
-            return `<span class="font-mono text-lg tracking-widest ${timeColor}">${padZero(hours)}h : ${padZero(mins)}m : ${padZero(secs)}s</span>`;
+            const timeString = `${padZero(hours)}h : ${padZero(mins)}m : ${padZero(secs)}s`;
+
+            if (isFinished) {
+                // Tampilan statis jika selesai
+                let icon = status === "REJECT" || status === "CANCEL" ? "<i class='fas fa-ban'></i> Selesai (Reject)" : "<i class='fas fa-check-circle'></i> Selesai (Valid)";
+                let textColor = status === "REJECT" || status === "CANCEL" ? "text-red-700" : "text-green-700";
+                return `
+                    <div class="font-bold ${textColor} text-sm">${icon}</div>
+                    <div class="font-mono text-sm text-gray-600 mt-1">Total: ${timeString}</div>
+                `;
+            } else {
+                // Tampilan berdetak jika masih pending
+                let timeColor = hours >= 4 ? "text-red-600 animate-pulse font-extrabold" : "text-gray-800";
+                
+                // Cek visual Freeze jika diakses tepat saat jam istirahat atau di luar jam kerja (Visual Only)
+                let currentH = (new Date()).getHours();
+                let isFreeze = (currentH >= 12 && currentH < 13) || currentH < 8 || currentH >= 16;
+                
+                let freezeTag = isFreeze ? `<div class="text-[10px] bg-yellow-200 text-yellow-800 px-2 rounded-full inline-block mb-1 shadow font-bold"><i class="fas fa-snowflake"></i> JAM ISTIRAHAT/LUAR OPERASIONAL</div><br>` : ``;
+
+                return `${freezeTag}<span class="font-mono text-xl tracking-widest ${timeColor}">${timeString}</span>`;
+            }
         }
 
         function renderSlaTable() {
@@ -352,7 +405,6 @@
             tbody.innerHTML = '';
             
             let filteredData = slaDatabase;
-
             if (currentUserRole !== "TAFADMIN") {
                 filteredData = slaDatabase.filter(d => d.dealer === currentUserRole);
             } else {
@@ -365,7 +417,7 @@
                 tr.innerHTML = `
                     <td class="px-5 py-4 whitespace-nowrap">
                         <div class="text-sm font-bold text-tafblue">${data.id}</div>
-                        <div class="text-xs text-gray-500 mt-1"><i class="far fa-clock"></i> Masuk: ${formatTime(data.time)} WIB</div>
+                        <div class="text-xs text-gray-500 mt-1"><i class="far fa-clock"></i> In: ${formatTimeDate(data.timeIn)}</div>
                     </td>
                     <td class="px-5 py-4 whitespace-nowrap">
                         <div class="text-xs font-bold bg-gray-100 text-gray-600 px-2 py-1 rounded inline-block shadow-sm"><i class="fas fa-store"></i> ${data.dealer}</div>
@@ -379,7 +431,7 @@
                         <div class="text-xs font-bold text-gray-600 mt-1">DP: <span class="text-green-600">${data.dp}</span></div>
                     </td>
                     <td class="px-5 py-4">
-                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-sm border shadow-sm ${data.color}">
+                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded border shadow-sm ${data.color}">
                             ${data.status}
                         </span>
                         <div class="text-xs text-gray-600 mt-2 italic whitespace-normal max-w-[200px]">
@@ -387,7 +439,7 @@
                         </div>
                     </td>
                     <td class="px-5 py-4 whitespace-nowrap text-center bg-gray-50 border-l border-gray-200">
-                        ${calculateElapsed(data.time, data.status)}
+                        ${renderSlaDisplay(data.timeIn, data.timeOut, data.status)}
                     </td>
                 `;
                 tbody.appendChild(tr);
