@@ -47,7 +47,7 @@
             <div class="px-6 py-4 flex justify-between items-center">
                 <div class="flex items-center space-x-3">
                     <i class="fas fa-car text-2xl text-tafred"></i>
-                    <h1 class="text-2xl font-black tracking-wider">DELUX <span class="text-sm font-light text-gray-300 ml-2">v3.1</span></h1>
+                    <h1 class="text-2xl font-black tracking-wider">DELUX <span class="text-sm font-light text-gray-300 ml-2">v3.2</span></h1>
                 </div>
                 <div class="flex items-center space-x-6">
                     <div class="bg-blue-900 px-4 py-2 rounded-lg border border-blue-700 shadow-inner flex items-center">
@@ -62,7 +62,8 @@
                 <button onclick="switchTab('slaBucket')" id="tabSla" class="px-6 py-4 tab-active focus:outline-none flex items-center">
                     <i class="fas fa-stopwatch mr-2"></i> SLA BUCKET TRACKER
                 </button>
-                <button onclick="switchTab('pksDealer')" id="tabPks" class="px-6 py-4 tab-inactive focus:outline-none flex items-center">
+                <!-- Tombol PKS disembunyikan secara default (Hard-Hidden) -->
+                <button onclick="switchTab('pksDealer')" id="tabPks" class="px-6 py-4 tab-inactive focus:outline-none items-center hidden">
                     <i class="fas fa-file-signature mr-2"></i> REGISTRASI PKS DEALER
                 </button>
             </div>
@@ -85,7 +86,6 @@
                         <div id="tafFilterContainer" class="hidden flex items-center space-x-3">
                             <label class="text-sm font-bold text-gray-700"><i class="fas fa-filter text-tafblue"></i> Buka Bucket Dealer:</label>
                             <select id="dealerFilter" onchange="renderSlaTable()" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-tafblue focus:border-tafblue block p-2.5 font-bold shadow-sm">
-                                <!-- HANYA BISA PILIH SATU SATU -->
                                 <option value="AUTO 77 PALEMBANG">🏢 Auto 77 Palembang</option>
                                 <option value="VIP CARS MOBILINDO">🏢 VIP Cars Mobilindo</option>
                                 <option value="CENTRA MOBILINDO">🏢 Centra Mobilindo</option>
@@ -115,7 +115,7 @@
                 </div>
             </div>
 
-            <!-- MODULE B: PKS DEALER ONBOARDING -->
+            <!-- MODULE B: PKS DEALER ONBOARDING (TAF ONLY) -->
             <div id="pksDealerModule" class="h-full overflow-auto p-6 absolute inset-0 bg-tafgray hidden">
                 <div class="max-w-6xl mx-auto">
                     
@@ -162,7 +162,6 @@
                             </div>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                                <!-- Checkboxes File Kelengkapan -->
                                 <label class="flex items-center space-x-3 p-3 border rounded-lg bg-white hover:bg-gray-50">
                                     <input type="checkbox" required class="w-5 h-5 text-tafblue">
                                     <span class="text-sm font-semibold text-gray-700">1. Form Due Diligence & Registrasi Lengkap</span>
@@ -226,7 +225,7 @@
         const t3 = new Date(now.getTime() - (1 * 60 * 60 * 1000) - (10 * 60 * 1000));
         const t4 = new Date(now.getTime() - (5 * 60 * 60 * 1000));
         
-        // Database Tersentralisasi Multi-Dealer (Data Diperlengkap)
+        // Database Tersentralisasi Multi-Dealer
         const slaDatabase = [
             { id: "APP-2620110", dealer: "AUTO 77 PALEMBANG", name: "Junaedi", domisili: "Palembang", unit: "Avanza 1.5 G 2022", dp: "30%", time: t1, status: "ANALISIS", ket: "Berkas KTP Pasangan sudah lengkap. Menunggu approval final dari HO analis.", color: "text-blue-700 bg-blue-100 border-blue-300" },
             { id: "APP-2620115", dealer: "VIP CARS MOBILINDO", name: "Asrida Dahriani", domisili: "Prabumulih", unit: "Innova Reborn 2.4", dp: "35%", time: t3, status: "PO", ket: "PO Terbit! Silakan cetak dokumen dan eksekusi hari ini.", color: "text-green-700 bg-green-100 border-green-300 font-bold" },
@@ -257,13 +256,15 @@
                 document.getElementById('activeUser').innerHTML = authRoles[code].isTaf ? authRoles[code].name : `<i class="fas fa-store mr-1"></i> DEALER: ${authRoles[code].name}`;
                 
                 if (authRoles[code].isTaf) {
+                    // Beri akses penuh ke Admin TAF
                     document.getElementById('tafFilterContainer').classList.remove('hidden');
-                    document.getElementById('tabPks').classList.remove('hidden');
-                    // Reset dropdown ke dealer urutan pertama agar tidak "ALL"
+                    document.getElementById('tabPks').style.display = "flex"; // Tampilkan tombol PKS
                     document.getElementById('dealerFilter').value = "AUTO 77 PALEMBANG";
                 } else {
+                    // HARD-LOCK SECURITY UNTUK DEALER: 
+                    // Filter dropdown & Tab PKS dikunci 100% dan dihilangkan dari DOM layout
                     document.getElementById('tafFilterContainer').classList.add('hidden');
-                    document.getElementById('tabPks').classList.add('hidden');
+                    document.getElementById('tabPks').style.display = "none"; 
                 }
                 
                 successLogin();
@@ -277,6 +278,7 @@
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('dashboardScreen').classList.replace('hidden', 'flex');
             
+            // Default selalu masuk ke SLA Bucket
             switchTab('slaBucket');
             startSLA();
         }
@@ -285,10 +287,20 @@
             document.getElementById('dashboardScreen').classList.replace('flex', 'hidden');
             document.getElementById('loginScreen').classList.remove('hidden');
             document.getElementById('accessCode').value = '';
+            
+            // Reset Keamanan
+            currentUserRole = "";
+            document.getElementById('tabPks').style.display = "none";
             clearInterval(timerInterval);
         }
 
         function switchTab(tabId) {
+            // LAYER KEAMANAN GANDA: Blokir eksekusi JavaScript jika role bukan TAFADMIN
+            if (tabId === 'pksDealer' && currentUserRole !== "TAFADMIN") {
+                alert("SECURITY ALERT: Akses Ditolak. Area ini khusus Administrator TAF.");
+                return;
+            }
+
             const slaModule = document.getElementById('slaBucketModule');
             const pksModule = document.getElementById('pksDealerModule');
             const tabSlaBtn = document.getElementById('tabSla');
@@ -342,10 +354,8 @@
             let filteredData = slaDatabase;
 
             if (currentUserRole !== "TAFADMIN") {
-                // Dealer view: Only see their own data
                 filteredData = slaDatabase.filter(d => d.dealer === currentUserRole);
             } else {
-                // TAF Admin view: Strict selection from dropdown (No "ALL" Option)
                 let selectedFilter = document.getElementById('dealerFilter').value;
                 filteredData = slaDatabase.filter(d => d.dealer === selectedFilter);
             }
